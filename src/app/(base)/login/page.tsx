@@ -159,7 +159,7 @@ export default function LoginPage() {
           <form action={submit} className="flex flex-col gap-5 2xl:gap-8">
             <div className="flex flex-col gap-2">
               <Label>Professor</Label>
-              <Select name="teacher">
+              <Select required name="teacher">
                 <SelectTrigger className="w-full ">
                   <SelectValue placeholder="Selecione o professor" />
                 </SelectTrigger>
@@ -177,7 +177,7 @@ export default function LoginPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label>Aluno</Label>
-              <Select name="student">
+              <Select required name="student">
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecione o aluno" />
                 </SelectTrigger>
