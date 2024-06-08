@@ -32,7 +32,6 @@ export default function PhasesPage() {
           </Link>
         </CardContent>
       </Card>
-      <p>Selecione a fase que deseja acessar</p>
     </>
   )
 }
