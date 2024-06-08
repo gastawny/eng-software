@@ -13,7 +13,7 @@ import Link from 'next/link'
 export default function BaseLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      {/* <Dialog>
+      <Dialog>
         <DialogTrigger
           className={buttonVariants({ variant: 'ghost', className: 'absolute top-1.5 left-1.5' })}
         >
@@ -48,7 +48,7 @@ export default function BaseLayout({ children }: Readonly<{ children: React.Reac
             </DialogClose>
           </DialogFooter>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
       {children}
     </>
   )
