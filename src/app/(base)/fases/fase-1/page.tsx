@@ -1,15 +1,21 @@
 'use client'
 
 import { Timer } from '@/components/Timer'
+import { buttonVariants } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import { DragDropContext, Draggable, DropResult, Droppable } from '@hello-pangea/dnd'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-function Ring({ className = '', id, item }: { className?: string; id: string; item: any }) {
-  const [asd, setAsd] = useState(item)
-
-  useEffect(() => setAsd(item), [item])
-
+function Ring({ className, id, item }: { className: string; id: string; item: any }) {
   return (
     <Droppable droppableId={id}>
       {(provided) => (
@@ -18,8 +24,8 @@ function Ring({ className = '', id, item }: { className?: string; id: string; it
           {...provided.droppableProps}
           className={`w-36 2xl:w-44 h-36 2xl:h-44 rounded-full border-8 flex items-center justify-center ${className}`}
         >
-          {asd.id && (
-            <Draggable draggableId={asd.id} index={10}>
+          {item.id && (
+            <Draggable draggableId={item.id} index={10}>
               {(provided) => (
                 <img
                   {...provided.draggableProps}
@@ -38,6 +44,8 @@ function Ring({ className = '', id, item }: { className?: string; id: string; it
 }
 
 export default function Phase1Page() {
+  const [wrongAnswer, setWrongAnswer] = useState(false)
+  const [correctAnswer, setCorrectAnswer] = useState('')
   const [rings, setRings] = useState([
     { id: '1', color: 'border-gray-100', item: {} },
     { id: '2', color: 'border-yellow-400', item: {} },
@@ -46,11 +54,36 @@ export default function Phase1Page() {
     { id: '5', color: 'border-blue-500', item: {} },
   ])
   const [items, setItems] = useState([
-    { id: '1', src: '/assets/svgs/sun.svg' },
-    { id: '2', src: '/assets/svgs/thermometer.svg' },
-    { id: '3', src: '/assets/svgs/dust.svg' },
-    { id: '4', src: '/assets/svgs/water.svg' },
-    { id: '5', src: '/assets/svgs/wind.svg' },
+    {
+      id: '1',
+      src: '/assets/svgs/sun.svg',
+      text: 'A luz é necessária para as plantas realizarem fotossíntese. Além de influenciar o crescimento e floração (fotoperiodismo) .',
+      correctRing: '2',
+    },
+    {
+      id: '2',
+      src: '/assets/svgs/thermometer.svg',
+      text: 'O calor regula o crescimento da planta, com o aumento da temperatura a planta transpira mais (perde água), realiza mais fotossíntese e respiração.',
+      correctRing: '4',
+    },
+    {
+      id: '3',
+      src: '/assets/svgs/dust.svg',
+      text: 'A terra fornece nutrientes necessários para o bom desenvolvimento da planta, conforme as necessidades de cada espécie vegetal. Além disso, o solo sustenta toda a estrutura vegetal.',
+      correctRing: '3',
+    },
+    {
+      id: '4',
+      src: '/assets/svgs/water.svg',
+      text: 'A água é fundamental para o crescimento da planta, sendo utilizada para transportar os nutrientes por toda a estrutura através da seiva.',
+      correctRing: '5',
+    },
+    {
+      id: '5',
+      src: '/assets/svgs/wind.svg',
+      text: 'O ar é necessário na planta para fornecer elementos que serão utilizados na fotossíntese e respiração',
+      correctRing: '1',
+    },
   ])
 
   function onDragEnd(e: DropResult) {
@@ -65,7 +98,14 @@ export default function Phase1Page() {
 
     if (!sourceItem) return
 
-    if (rings.find((r) => r.id === destination && r.item.id)) return
+    const correctRing = rings.find((r) => r.id === destination)
+
+    if (correctRing?.item?.id) return
+
+    if (correctRing?.id != sourceItem.correctRing) {
+      setWrongAnswer(true)
+      return
+    }
 
     setRings((rings) =>
       rings.map((r) => {
@@ -77,10 +117,52 @@ export default function Phase1Page() {
     )
 
     setItems((items) => items.filter((_, i) => i !== e.source.index))
+
+    setCorrectAnswer(sourceItem.text)
   }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
+      <Dialog open={wrongAnswer} onOpenChange={setWrongAnswer}>
+        <DialogContent className="gap-6 p-8 w-[48rem] ">
+          <div className="flex justify-center items-center flex-col gap-6">
+            <p className="text-5xl font-bold text-center">
+              Resposta errada. <br /> Tente novamente!
+            </p>
+            <img src="/assets/svgs/bad.svg" />
+          </div>
+          <DialogFooter>
+            <DialogClose
+              className={buttonVariants({
+                size: 'lg',
+                className: 'text-base font-medium',
+              })}
+            >
+              Voltar
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {correctAnswer.length > 0 && (
+        <Dialog open={correctAnswer.length > 0}>
+          <DialogContent className="gap-6 p-8 w-[48rem] ">
+            <div className="flex justify-center items-center flex-col gap-6">
+              <p className="text-4xl text-center">{correctAnswer}</p>
+            </div>
+            <DialogFooter>
+              <DialogClose
+                onClick={() => setCorrectAnswer('')}
+                className={buttonVariants({
+                  size: 'lg',
+                  className: 'text-base font-medium',
+                })}
+              >
+                Entendi!
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
       <Timer />
       <div className="max-h-screen w-screen flex gap-60 2xl:gap-96">
         <h1 className="text-3xl font-bold absolute left-1/2 top-4 2xl:top-8 -translate-x-1/2">
