@@ -2,15 +2,7 @@
 
 import { Timer } from '@/components/Timer'
 import { buttonVariants } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { Dialog, DialogClose, DialogContent, DialogFooter } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import { DragDropContext, Draggable, DropResult, Droppable } from '@hello-pangea/dnd'
 import { useState } from 'react'
