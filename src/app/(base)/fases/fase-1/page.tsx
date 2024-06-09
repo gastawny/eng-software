@@ -6,6 +6,9 @@ import { Dialog, DialogClose, DialogContent, DialogFooter } from '@/components/u
 import { Progress } from '@/components/ui/progress'
 import { DragDropContext, Draggable, DropResult, Droppable } from '@hello-pangea/dnd'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { getCookie } from 'cookies-next'
+import { api } from '@/config/variables'
 
 function Ring({ className, id, item }: { className: string; id: string; item: any }) {
   return (
@@ -36,14 +39,16 @@ function Ring({ className, id, item }: { className: string; id: string; item: an
 }
 
 export default function Phase1Page() {
+  const router = useRouter()
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const [correctAnswer, setCorrectAnswer] = useState('')
+  const [seconds, setSeconds] = useState(0)
   const [rings, setRings] = useState([
-    { id: '1', color: 'border-gray-100', item: {} },
-    { id: '2', color: 'border-yellow-400', item: {} },
-    { id: '3', color: 'border-yellow-800', item: {} },
-    { id: '4', color: 'border-red-600', item: {} },
-    { id: '5', color: 'border-blue-500', item: {} },
+    { id: '1', color: 'border-gray-100', item: {}, element: 'Ar' },
+    { id: '2', color: 'border-yellow-400', item: {}, element: 'Luz' },
+    { id: '3', color: 'border-yellow-800', item: {}, element: 'Terra' },
+    { id: '4', color: 'border-red-600', item: {}, element: 'Calor' },
+    { id: '5', color: 'border-blue-500', item: {}, element: 'Água' },
   ])
   const [items, setItems] = useState([
     {
@@ -78,7 +83,7 @@ export default function Phase1Page() {
     },
   ])
 
-  function onDragEnd(e: DropResult) {
+  async function onDragEnd(e: DropResult) {
     if (!e.destination) return
 
     const source = e.source.droppableId
@@ -90,11 +95,14 @@ export default function Phase1Page() {
 
     if (!sourceItem) return
 
-    const correctRing = rings.find((r) => r.id === destination)
+    const currentRing = rings.find((r) => r.id === destination)
+    const correctRing = rings.find((r) => r.id === sourceItem.correctRing)
 
-    if (correctRing?.item?.id) return
+    if (currentRing?.item?.id || !correctRing) return
 
-    if (correctRing?.id != sourceItem.correctRing) {
+    await sendResult(currentRing!.element, correctRing.element)
+
+    if (currentRing?.id != sourceItem.correctRing) {
       setWrongAnswer(true)
       return
     }
@@ -111,6 +119,28 @@ export default function Phase1Page() {
     setItems((items) => items.filter((_, i) => i !== e.source.index))
 
     setCorrectAnswer(sourceItem.text)
+  }
+
+  function getTotalSeconds(totalSeconds: number) {
+    setSeconds(totalSeconds)
+  }
+
+  async function sendResult(answer: string, correctAnswer: string) {
+    const student = getCookie('student')
+
+    if (!student) return
+
+    await fetch(`${api}/phase-one/answer/${student}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ answer, correctAnswer, seconds }),
+    })
+  }
+
+  async function handleClick() {
+    router.push('/fases')
   }
 
   return (
@@ -155,7 +185,31 @@ export default function Phase1Page() {
           </DialogContent>
         </Dialog>
       )}
-      <Timer />
+      <Dialog
+        open={
+          (rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100 == 100
+        }
+      >
+        <DialogContent className="gap-6 p-8 w-[60rem] ">
+          <div className="flex justify-center items-center flex-col gap-6 text-4xl text-center">
+            <p className="">Parabéns!</p>
+            <p>Você concluiu a Fase I: Crescendo</p>
+            <p>Volte para a tela de seleção de fases para continuar.</p>
+          </div>
+          <DialogFooter>
+            <DialogClose
+              onClick={handleClick}
+              className={buttonVariants({
+                size: 'lg',
+                className: 'text-base font-medium',
+              })}
+            >
+              Voltar
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Timer getTotalSeconds={getTotalSeconds} />
       <div className="max-h-screen w-screen flex gap-60 2xl:gap-96">
         <h1 className="text-3xl font-bold absolute left-1/2 top-4 2xl:top-8 -translate-x-1/2">
           Fase I: Crescendo

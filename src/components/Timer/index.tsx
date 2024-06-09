@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-export function Timer() {
+export function Timer({ getTotalSeconds }: { getTotalSeconds: (totalSeconds: number) => void }) {
   const [totalSeconds, setTotalSeconds] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
 
@@ -29,6 +29,10 @@ export function Timer() {
   useEffect(() => {
     startTimer()
   }, [])
+
+  useEffect(() => {
+    getTotalSeconds(totalSeconds)
+  }, [totalSeconds])
 
   const stopTimer = () => {
     setIsRunning(false)
