@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { api } from '@/config/variables'
 import Link from 'next/link'
 
 export default function Home() {
@@ -10,7 +9,6 @@ export default function Home() {
         Plantas em Ação:
         <br />
         Descobrindo e Crescendo
-        {api}
       </h1>
       <Card>
         <CardContent className="flex flex-col gap-4 items-center w-[28rem] 2xl:w-[40rem]">
