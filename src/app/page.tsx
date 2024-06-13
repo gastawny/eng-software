@@ -26,28 +26,36 @@ export default function Home() {
       <Card>
         <CardContent className="flex flex-col gap-4 items-center w-[28rem] 2xl:w-[40rem]">
           <Button variant="ghost" asChild className="w-full text-2xl py-6">
-            <div className="flex gap-4">
-              <Link href="/login">Iniciar</Link>
-              <img className="h-5" src="/assets/svgs/play.svg" />
-            </div>
+            <Link href="/login">
+              <div className="flex gap-4">
+                <span>Iniciar</span>
+                <img className="h-5" src="/assets/svgs/play.svg" />
+              </div>
+            </Link>
           </Button>
           <Button variant="ghost" asChild className="w-full text-2xl py-6">
-            <div className="flex gap-3">
-              <Link href="/comojogar">Como Jogar</Link>
-              <img className="h-5" src="/assets/svgs/doubt.svg" />
-            </div>
+            <Link href="/comojogar">
+              <div className="flex gap-3">
+                <span>Como Jogar</span>
+                <img className="h-5" src="/assets/svgs/doubt.svg" />
+              </div>
+            </Link>
           </Button>
           <Button variant="ghost" asChild className="w-full text-2xl py-6">
-            <div className="flex gap-3">
-              <Link href="/creditos">Créditos</Link>
-              <img className="h-5" src="/assets/svgs/info.svg" />
-            </div>
+            <Link href="/creditos">
+              <div className="flex gap-3">
+                <span>Créditos</span>
+                <img className="h-5" src="/assets/svgs/info.svg" />
+              </div>
+            </Link>
           </Button>
           <Button variant="ghost" asChild className="w-full text-2xl py-6">
-            <div className="flex gap-3">
-              <Link href="/professor/login">Professor</Link>
-              <img className="h-5" src="/assets/svgs/teacher.svg" />
-            </div>
+            <Link href="/professor/login">
+              <div className="flex gap-3">
+                <span>Professor</span>
+                <img className="h-5" src="/assets/svgs/teacher.svg" />
+              </div>
+            </Link>
           </Button>
         </CardContent>
       </Card>

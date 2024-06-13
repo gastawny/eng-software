@@ -41,7 +41,7 @@ function Ring({ className, id, item }: { className: string; id: string; item: an
 
 export default function Phase1Page() {
   const router = useRouter()
-  const [audio, setAudio] = useState({src: null, time: 0})
+  const [audio, setAudio] = useState<{src: HTMLAudioElement|null; time: number}>({src: null, time: 0})
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [seconds, setSeconds] = useState(0)
@@ -95,10 +95,12 @@ export default function Phase1Page() {
   }, [])
 
   useEffect(() => {
+    if (!audio.src) return
+
     setSound(audio.src, audio.time)
 
     return () => {
-      audio.src.pause()
+      audio.src?.pause()
     }
   }, [audio])
 
@@ -123,6 +125,8 @@ export default function Phase1Page() {
 
     if (currentRing?.id != sourceItem.correctRing) {
       setWrongAnswer(true)
+      setAudio({src: new Audio('/assets/sounds/fase1/fase1-resposta-errada.ogg'), time: 3000})
+
       return
     }
 
@@ -138,7 +142,14 @@ export default function Phase1Page() {
     setItems((items) => items.filter((_, i) => i !== e.source.index))
 
     setCorrectAnswer(sourceItem.text)
+    setAudio({src: new Audio(`/assets/sounds/fase1/fase1-resposta-correta-${correctRing.id}.ogg`), time: correctRing.time})
   }
+
+  useEffect(() => {
+    if((rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100 == 100) {
+      setAudio({ src: new Audio('/assets/sounds/fase1/fase1-conclusao.ogg'), time: 3500 })
+    }
+  }, [rings])
 
   function getTotalSeconds(totalSeconds: number) {
     setSeconds(totalSeconds)
@@ -163,7 +174,7 @@ export default function Phase1Page() {
   }
 
   function handleStopAudio() {
-    audio.src.pause()
+    audio.src?.pause()
   }
 
   return (
@@ -196,7 +207,10 @@ export default function Phase1Page() {
             </div>
             <DialogFooter>
               <DialogClose
-                onClick={() => setCorrectAnswer('')}
+                onClick={() => {
+                  setCorrectAnswer('')
+                  handleStopAudio()
+                }}
                 className={buttonVariants({
                   size: 'lg',
                   className: 'text-base font-medium',
@@ -248,7 +262,7 @@ export default function Phase1Page() {
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided) => (
                     <img
-                      onMouseEnter={() => setSound(new Audio('/assets/sounds/fase1/fase1-arrastar-5.ogg'), item.time)}
+                      onMouseEnter={() => setAudio({src: new Audio(`/assets/sounds/fase1/fase1-arrastar-${item.id}.ogg`), time: item.time})}
                       onMouseLeave={handleStopAudio}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
