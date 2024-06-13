@@ -1,8 +1,21 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { setSound } from '@/utils/setSound'
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 export default function Home() {
+  useEffect(() => {
+    const audio = new Audio('/assets/sounds/tela-inicial.ogg')
+    setSound(audio, 11800)
+
+    return () => {
+      audio.pause()
+    }
+  }, [])
+  
   return (
     <div className="relative h-screen w-screen flex justify-center items-center">
       <h1 className="absolute top-8 text-center text-4xl font-bold">

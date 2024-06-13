@@ -1,8 +1,21 @@
+'use client'
+
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { setSound } from '@/utils/setSound'
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 export default function PhasesPage() {
+  useEffect(() => {
+    const audio = new Audio('/assets/sounds/selecao-de-fases.ogg')
+    setSound(audio, 11500)
+
+    return () => {
+      audio.pause()
+    }
+  }, [])
+  
   return (
     <>
       <h1 className="text-5xl font-bold absolute left-1/2 top-16 -translate-x-1/2">

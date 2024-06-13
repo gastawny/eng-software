@@ -5,10 +5,11 @@ import { buttonVariants } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogFooter } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import { DragDropContext, Draggable, DropResult, Droppable } from '@hello-pangea/dnd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCookie } from 'cookies-next'
 import { api } from '@/config/variables'
+import { setSound } from '@/utils/setSound'
 
 function Ring({ className, id, item }: { className: string; id: string; item: any }) {
   return (
@@ -40,15 +41,16 @@ function Ring({ className, id, item }: { className: string; id: string; item: an
 
 export default function Phase1Page() {
   const router = useRouter()
+  const [audio, setAudio] = useState({src: null, time: 0})
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [seconds, setSeconds] = useState(0)
   const [rings, setRings] = useState([
-    { id: '1', color: 'border-gray-100', item: {}, element: 'Ar' },
-    { id: '2', color: 'border-yellow-400', item: {}, element: 'Luz' },
-    { id: '3', color: 'border-yellow-800', item: {}, element: 'Terra' },
-    { id: '4', color: 'border-red-600', item: {}, element: 'Calor' },
-    { id: '5', color: 'border-blue-500', item: {}, element: 'Água' },
+    { id: '1', color: 'border-gray-100', item: {}, element: 'Ar', time: 11500 },
+    { id: '2', color: 'border-yellow-400', item: {}, element: 'Luz', time: 12000 },
+    { id: '3', color: 'border-yellow-800', item: {}, element: 'Terra', time: 13600 },
+    { id: '4', color: 'border-red-600', item: {}, element: 'Calor', time: 18000 },
+    { id: '5', color: 'border-blue-500', item: {}, element: 'Água', time: 10000 },
   ])
   const [items, setItems] = useState([
     {
@@ -56,32 +58,49 @@ export default function Phase1Page() {
       src: '/assets/svgs/sun.svg',
       text: 'A luz é necessária para as plantas realizarem fotossíntese. Além de influenciar o crescimento e floração (fotoperiodismo) .',
       correctRing: '2',
+      time: 3600
     },
     {
       id: '2',
       src: '/assets/svgs/thermometer.svg',
       text: 'O calor regula o crescimento da planta, com o aumento da temperatura a planta transpira mais (perde água), realiza mais fotossíntese e respiração.',
       correctRing: '4',
+      time: 4200
     },
     {
       id: '3',
       src: '/assets/svgs/dust.svg',
       text: 'A terra fornece nutrientes necessários para o bom desenvolvimento da planta, conforme as necessidades de cada espécie vegetal. Além disso, o solo sustenta toda a estrutura vegetal.',
       correctRing: '3',
+      time: 3500
     },
     {
       id: '4',
       src: '/assets/svgs/water.svg',
       text: 'A água é fundamental para o crescimento da planta, sendo utilizada para transportar os nutrientes por toda a estrutura através da seiva.',
       correctRing: '5',
+      time: 3500
     },
     {
       id: '5',
       src: '/assets/svgs/wind.svg',
       text: 'O ar é necessário na planta para fornecer elementos que serão utilizados na fotossíntese e respiração',
       correctRing: '1',
+      time: 3700
     },
   ])
+
+  useEffect(() => {
+    setAudio({src: new Audio('/assets/sounds/tutorial-fase1.ogg'), time: 22500})
+  }, [])
+
+  useEffect(() => {
+    setSound(audio.src, audio.time)
+
+    return () => {
+      audio.src.pause()
+    }
+  }, [audio])
 
   async function onDragEnd(e: DropResult) {
     if (!e.destination) return
@@ -141,6 +160,10 @@ export default function Phase1Page() {
 
   async function handleClick() {
     router.push('/fases')
+  }
+
+  function handleStopAudio() {
+    audio.src.pause()
   }
 
   return (
@@ -225,6 +248,8 @@ export default function Phase1Page() {
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided) => (
                     <img
+                      onMouseEnter={() => setSound(new Audio('/assets/sounds/fase1/fase1-arrastar-5.ogg'), item.time)}
+                      onMouseLeave={handleStopAudio}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       ref={provided.innerRef}

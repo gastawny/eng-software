@@ -5,6 +5,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogFooter } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import { api } from '@/config/variables'
+import { setSound } from '@/utils/setSound'
 import { getCookie } from 'cookies-next'
 import { useEffect, useState } from 'react'
 
@@ -13,7 +14,7 @@ export default function Phase2Page() {
   const [seconds, setSeconds] = useState(0)
   const [click, setClick] = useState('')
   const [dialog, setDialog] = useState({modal: false} as any)
-  const [options, Options] = useState([
+  const [options,] = useState([
     {
       label: 'Flor',
     },
@@ -58,22 +59,29 @@ export default function Phase2Page() {
       setQuestions(questions)
     }
 
+    const audio = new Audio('/assets/sounds/tutorial-fase2.ogg')
+    setSound(audio, 20200)
+
     fetchQuestions()
+
+    return () => {
+      audio.pause()
+    }
   }, [])
 
-  async function handleClick() {
+  function handleClick() {
     const studentId = getCookie('student')
-    // await fetch(`${api}/phase-two/answer/${studentId}/${questions[indexQuestion].id}`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({
-    //     'answer': click,
-    //     'correctAnswer': questions[indexQuestion].answer,
-    //     'seconds': seconds
-    //   })
-    // })
+    fetch(`${api}/phase-two/answer/${studentId}/${questions[indexQuestion].id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'answer': click,
+        'correctAnswer': questions[indexQuestion].answer,
+        'seconds': seconds
+      })
+    })
 
     setClick('')
     if(click != questions[indexQuestion].answer) {

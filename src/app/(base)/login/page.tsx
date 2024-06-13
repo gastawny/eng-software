@@ -17,6 +17,7 @@ import {
 import { useEffect, useState } from 'react'
 import { submit } from './action'
 import { api } from '@/config/variables'
+import { setSound } from '@/utils/setSound'
 
 export default function LoginPage() {
   const [groups, setGroups] = useState([] as Group[])
@@ -41,7 +42,14 @@ export default function LoginPage() {
       setStudents(students)
     }
 
+    const audio = new Audio('/assets/sounds/login-aluno.ogg')
+    setSound(audio, 11500)
+
     fetchData()
+
+    return () => {
+      audio.pause()
+    }
   }, [])
 
   return (
