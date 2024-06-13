@@ -43,7 +43,10 @@ export default function RegisterPage() {
       body: JSON.stringify({ username: inputs.username, password: inputs.password }),
     })
 
-    if (!res.ok) setError('Erro ao logar')
+    if (!res.ok) {
+      setError('Erro ao logar')
+      return
+    }
 
     const data = await res.json()
 

@@ -21,11 +21,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { api } from '@/config/variables'
 import { useEffect, useState } from 'react'
+import { getCookie } from 'cookies-next'
+import { useRouter } from 'next/navigation'
 
 export default function TeacherPage() {
+  const router = useRouter()
+  const teacherId = getCookie('teacherId')
   const [students, setstudents] = useState([] as any[])
 
   useEffect(() => {
+    if(!teacherId) router.push('/professor/login')
+    
     fetch(`${api}/report`)
       .then((response) => response.json())
       .then((data) => {
@@ -51,7 +57,7 @@ export default function TeacherPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {students.map((s) => (
+                {students?.map((s) => (
                   <TableRow key={s.studentName}>
                     <TableCell className="font-medium">{s.studentName}</TableCell>
                     <TableCell className="text-right">
@@ -73,7 +79,7 @@ export default function TeacherPage() {
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {s.phaseOne.elements.map((e: any) => (
+                                {s?.phaseOne?.elements?.map((e: any) => (
                                   <TableRow key={e.element}>
                                     <TableCell className="font-medium">{e.element}</TableCell>
                                     <TableCell>{e.tries}</TableCell>
