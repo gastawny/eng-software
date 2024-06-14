@@ -7,13 +7,17 @@ import { Progress } from '@/components/ui/progress'
 import { api } from '@/config/variables'
 import { setSound } from '@/utils/setSound'
 import { getCookie } from 'cookies-next'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function Phase2Page() {
+  const router = useRouter()
+  const [deuCerto, setDeuCerto] = useState(false)
   const [questions, setQuestions] = useState([] as any[])
   const [seconds, setSeconds] = useState(0)
   const [click, setClick] = useState('')
   const [dialog, setDialog] = useState({modal: false} as any)
+  const [audio, setAudio] = useState<{src: HTMLAudioElement|null; time: number}>({src: null, time: 0})
   const [options,] = useState([
     {
       label: 'Flor',
@@ -59,19 +63,33 @@ export default function Phase2Page() {
       setQuestions(questions)
     }
 
-    const audio = new Audio('/assets/sounds/tutorial-fase2.ogg')
-    setSound(audio, 20200)
+    setAudio({src: new Audio('/assets/sounds/tutorial-fase1.ogg'), time: 22500})
 
     fetchQuestions()
-
-    return () => {
-      audio.pause()
-    }
   }, [])
 
-  function handleClick() {
+  useEffect(() => {
+    if (!audio.src) return
+
+    setSound(audio.src, audio.time)
+
+    return () => {
+      audio.src?.pause()
+    }
+  }, [audio])
+
+  useEffect(() => {
+    setAudio({src: new Audio(`/assets/sounds/fase2/confirmacao-resposta-${click}.ogg`), time: 5000})
+  }, [click])
+
+  useEffect(() => {
+    if(deuCerto)
+      setAudio({src: new Audio('/assets/sounds/fase2/conclusao-fase2.ogg'), time: 4800})
+  }, [deuCerto])
+
+  async function handleClick() {
     const studentId = getCookie('student')
-    fetch(`${api}/phase-two/answer/${studentId}/${questions[indexQuestion].id}`, {
+    await fetch(`${api}/phase-two/answer/${studentId}/${questions[indexQuestion].id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -100,11 +118,25 @@ export default function Phase2Page() {
     })
 
     if(indexQuestion == 2) {
-      return
+      setDialog({
+        modal: true,
+        error: false,
+        message: 'Parabéns! Você concluiu a fase II!'
+      })
+      setDeuCerto(true)
+      setTimeout(() => {
+        router.push('/fases')
+      }, 5000)
     }
 
     setIndexQuestion(indexQuestion + 1)
   }
+
+  useEffect(() => {
+    if (dialog.modal && dialog.error) {
+      setAudio({src: new Audio('/assets/sounds/fase2/resposta-errada.ogg'), time: 3500})
+    }
+  }, [dialog])
 
   function getTotalSeconds(totalSeconds: number) {
     setSeconds(totalSeconds)
@@ -133,7 +165,7 @@ export default function Phase2Page() {
                 variant: click.length > 0 ? 'destructive' : 'default',
                 className: 'text-base font-medium',
               })}
-              onClick={handleClick}
+              onClick={click.length == 0 ? () => {} : handleClick}
             >
               {click.length == 0 && 'Continuar'}
               {click.length > 0 && 'Voltar'}
@@ -151,7 +183,7 @@ export default function Phase2Page() {
           {questions[indexQuestion]?.statement?.map((question, index) => (
             <div className='bg-card shadow-lg py-2 2xl:py-4 px-4 2xl:px-6 rounded-xl flex items-center justify-between gap-8 2xl:gap-16' key={index}>
               <p className='text-xl font-semibold'>{question.statementDescription.charAt(0).toUpperCase() + question.statementDescription.slice(1)}</p>
-              <button className='hover:bg-primary/80 duration-150 bg-primary/50 p-4 rounded-xl'>
+              <button onClick={() => setAudio({src: new Audio(`/assets/sounds/fase2/opcoes/${question.id}.ogg`), time: 5000})} className='hover:bg-primary/80 duration-150 bg-primary/50 p-4 rounded-xl'>
                 <img className='h-8' src="/assets/svgs/audio.svg" />
               </button>
             </div>

@@ -59,7 +59,7 @@ export default function LoginPage() {
         <CardContent>
           <form action={submit} className="flex flex-col gap-5 2xl:gap-8">
             <div className="flex flex-col gap-2">
-              <Label>Professor</Label>
+              <Label>Turma</Label>
               <Select
                 onValueChange={(e) =>
                   setSelectedGroup(groups.filter((g) => g.idGroup == Number(e))[0])
@@ -68,11 +68,11 @@ export default function LoginPage() {
                 name="group"
               >
                 <SelectTrigger className="w-full ">
-                  <SelectValue placeholder="Selecione o professor" />
+                  <SelectValue placeholder="Selecione a turma" />
                 </SelectTrigger>
                 <SelectContent className="h-72">
                   <SelectGroup>
-                    <SelectLabel>Professores</SelectLabel>
+                    <SelectLabel>Turmas</SelectLabel>
                     {groups.map((group) => (
                       <SelectItem key={group.idGroup} value={group.idGroup.toString()}>
                         {group.name}

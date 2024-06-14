@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body className={alef.className}>{children}</body>
+      <body className={`${alef.className} uppercase`}>{children}</body>
     </html>
   )
 }
