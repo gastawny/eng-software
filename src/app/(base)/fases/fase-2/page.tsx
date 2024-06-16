@@ -217,7 +217,7 @@ export default function Phase2Page() {
           ))}
         </div>
       </div>
-      <div className="flex absolute left-1/2 bottom-10 2xl:bottom-32 -translate-x-1/2 w-4/5 gap-6 justify-between">
+      <div className="flex absolute left-1/2 bottom-10 2xl:bottom-24 -translate-x-1/2 w-4/5 gap-6 justify-between">
         {options.map((option, index) => (
           <button
             onClick={() => handleClick(option.label)}
@@ -227,7 +227,7 @@ export default function Phase2Page() {
             <p className="text-xl font-semibold">{option.label}</p>
             <div className="bg-primary/50 p-4 rounded-xl">
               <img
-                className="w-10 2xl:w-16 h-10 2xl:h-16"
+                className="w-10 2xl:w-12 h-10 2xl:h-12"
                 src={`/assets/svgs/${option.label}.svg`}
               />
             </div>
