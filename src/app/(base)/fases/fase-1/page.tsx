@@ -48,6 +48,7 @@ export default function Phase1Page() {
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [seconds, setSeconds] = useState(0)
+  const [finish, setFinish] = useState(false)
   const [rings, setRings] = useState([
     { id: '1', color: 'border-gray-100', item: {}, element: 'Ar', time: 11500 },
     { id: '2', color: 'border-yellow-400', item: {}, element: 'Luz', time: 12000 },
@@ -151,11 +152,12 @@ export default function Phase1Page() {
     })
   }
 
-  useEffect(() => {
+  function handlePhase() {
     if ((rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100 == 100) {
+      setFinish(true)
       setAudio({ src: new Audio('/assets/sounds/fase1/fase1-conclusao.ogg'), time: 3500 })
     }
-  }, [rings])
+  }
 
   function getTotalSeconds(totalSeconds: number) {
     setSeconds(totalSeconds)
@@ -217,6 +219,7 @@ export default function Phase1Page() {
                 onClick={() => {
                   setCorrectAnswer('')
                   handleStopAudio()
+                  handlePhase()
                 }}
                 className={buttonVariants({
                   size: 'lg',
@@ -229,11 +232,7 @@ export default function Phase1Page() {
           </DialogContent>
         </Dialog>
       )}
-      <Dialog
-        open={
-          (rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100 == 100
-        }
-      >
+      <Dialog open={finish}>
         <DialogContent className="gap-6 p-8 w-[60rem] ">
           <div className="flex justify-center items-center flex-col gap-6 text-4xl text-center">
             <p className="">Parabéns!</p>

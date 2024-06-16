@@ -66,7 +66,7 @@ export default function Phase2Page() {
       setQuestions(questions)
     }
 
-    setAudio({ src: new Audio('/assets/sounds/tutorial-fase1.ogg'), time: 22500 })
+    setAudio({ src: new Audio('/assets/sounds/tutorial-fase2.ogg'), time: 22500 })
 
     fetchQuestions()
   }, [])
@@ -115,6 +115,8 @@ export default function Phase2Page() {
       error: false,
       message: 'Resposta correta!',
     })
+
+    setAudio({ src: new Audio('/assets/sounds/fase2/acertou.ogg'), time: 2600 })
 
     if (indexQuestion == 2) {
       setDialog({
