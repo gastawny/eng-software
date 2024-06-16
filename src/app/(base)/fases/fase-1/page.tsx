@@ -253,7 +253,7 @@ export default function Phase1Page() {
         </DialogContent>
       </Dialog>
       <Timer getTotalSeconds={getTotalSeconds} />
-      <div className="max-h-screen w-screen flex gap-60 2xl:gap-96">
+      <div className="max-h-screen w-screen flex gap-52 2xl:gap-96">
         <h1 className="text-3xl font-bold absolute left-1/2 top-4 2xl:top-8 -translate-x-1/2">
           Fase I: Crescendo
         </h1>
@@ -290,7 +290,7 @@ export default function Phase1Page() {
         </Droppable>
 
         <div className="flex gap-4 items-center">
-          <div className="flex h-full 2xl:h-3/4 flex-wrap flex-col gap-8 justify-center">
+          <div className="flex h-full 2xl:h-3/4 flex-wrap flex-col gap-5 2xl:gap-8 justify-center">
             {rings.map((r, i) => (
               <Ring key={r.id} id={r.id} className={r.color} item={rings[i].item} />
             ))}
