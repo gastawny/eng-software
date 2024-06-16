@@ -18,7 +18,7 @@ function Ring({ className, id, item }: { className: string; id: string; item: an
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className={`w-36 2xl:w-44 h-36 2xl:h-44 rounded-full border-8 flex items-center justify-center ${className}`}
+          className={`w-36 2xl:w-40 h-36 2xl:h-40 rounded-full border-8 flex items-center justify-center ${className}`}
         >
           {item.id && (
             <Draggable draggableId={item.id} index={10}>
@@ -253,7 +253,7 @@ export default function Phase1Page() {
         </DialogContent>
       </Dialog>
       <Timer getTotalSeconds={getTotalSeconds} />
-      <div className="max-h-screen w-screen flex gap-52 2xl:gap-96">
+      <div className="max-h-screen w-screen flex gap-52 2xl:gap-80">
         <h1 className="text-3xl font-bold absolute left-1/2 top-4 2xl:top-8 -translate-x-1/2">
           Fase I: Crescendo
         </h1>

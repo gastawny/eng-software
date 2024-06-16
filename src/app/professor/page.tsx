@@ -388,7 +388,7 @@ export default function TeacherPage() {
                       </DialogTrigger>
                       <DialogContent className="w-[800px]">
                         <DialogHeader>
-                          <DialogTitle>Fase I - {s.studentName}</DialogTitle>
+                          <DialogTitle>Fase II - {s.studentName}</DialogTitle>
                         </DialogHeader>
                         <ScrollArea className="h-[500px] w-full rounded-md border p-4">
                           <Table>

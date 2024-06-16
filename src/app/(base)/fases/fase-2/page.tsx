@@ -94,7 +94,7 @@ export default function Phase2Page() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        answer: click,
+        answer: option,
         correctAnswer: questions[indexQuestion].answer,
         seconds: seconds,
       }),
