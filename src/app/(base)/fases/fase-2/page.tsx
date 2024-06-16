@@ -6,7 +6,7 @@ import { Dialog, DialogClose, DialogContent, DialogFooter } from '@/components/u
 import { Progress } from '@/components/ui/progress'
 import { api } from '@/config/variables'
 import { setSound } from '@/utils/setSound'
-import { getCookie } from 'cookies-next'
+import { getCookie, setCookie } from 'cookies-next'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -124,6 +124,7 @@ export default function Phase2Page() {
       })
       setDeuCerto(true)
       setTimeout(() => {
+        setCookie('phase-2', true)
         router.push('/fases')
       }, 5000)
     }
@@ -139,6 +140,10 @@ export default function Phase2Page() {
 
   function getTotalSeconds(totalSeconds: number) {
     setSeconds(totalSeconds)
+  }
+
+  function handlePhase() {
+    if (indexQuestion == 3) router.push('/fases')
   }
 
   return (
@@ -167,7 +172,7 @@ export default function Phase2Page() {
                 variant: click.length > 0 ? 'destructive' : 'default',
                 className: 'text-base font-medium',
               })}
-              onClick={click.length == 0 ? () => {} : handleClick}
+              onClick={click.length == 0 ? handlePhase : handleClick}
             >
               {click.length == 0 && 'Continuar'}
               {click.length > 0 && 'Voltar'}

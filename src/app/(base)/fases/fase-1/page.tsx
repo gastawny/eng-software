@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { DragDropContext, Draggable, DropResult, Droppable } from '@hello-pangea/dnd'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getCookie } from 'cookies-next'
+import { getCookie, setCookie } from 'cookies-next'
 import { api } from '@/config/variables'
 import { setSound } from '@/utils/setSound'
 
@@ -41,7 +41,10 @@ function Ring({ className, id, item }: { className: string; id: string; item: an
 
 export default function Phase1Page() {
   const router = useRouter()
-  const [audio, setAudio] = useState<{src: HTMLAudioElement|null; time: number}>({src: null, time: 0})
+  const [audio, setAudio] = useState<{ src: HTMLAudioElement | null; time: number }>({
+    src: null,
+    time: 0,
+  })
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [seconds, setSeconds] = useState(0)
@@ -58,40 +61,40 @@ export default function Phase1Page() {
       src: '/assets/svgs/sun.svg',
       text: 'A luz é necessária para as plantas realizarem fotossíntese. Além de influenciar o crescimento e floração (fotoperiodismo) .',
       correctRing: '2',
-      time: 3600
+      time: 3600,
     },
     {
       id: '2',
       src: '/assets/svgs/thermometer.svg',
       text: 'O calor regula o crescimento da planta, com o aumento da temperatura a planta transpira mais (perde água), realiza mais fotossíntese e respiração.',
       correctRing: '4',
-      time: 4200
+      time: 4200,
     },
     {
       id: '3',
       src: '/assets/svgs/dust.svg',
       text: 'A terra fornece nutrientes necessários para o bom desenvolvimento da planta, conforme as necessidades de cada espécie vegetal. Além disso, o solo sustenta toda a estrutura vegetal.',
       correctRing: '3',
-      time: 3500
+      time: 3500,
     },
     {
       id: '4',
       src: '/assets/svgs/water.svg',
       text: 'A água é fundamental para o crescimento da planta, sendo utilizada para transportar os nutrientes por toda a estrutura através da seiva.',
       correctRing: '5',
-      time: 3500
+      time: 3500,
     },
     {
       id: '5',
       src: '/assets/svgs/wind.svg',
       text: 'O ar é necessário na planta para fornecer elementos que serão utilizados na fotossíntese e respiração',
       correctRing: '1',
-      time: 3700
+      time: 3700,
     },
   ])
 
   useEffect(() => {
-    setAudio({src: new Audio('/assets/sounds/tutorial-fase1.ogg'), time: 22500})
+    setAudio({ src: new Audio('/assets/sounds/tutorial-fase1.ogg'), time: 22500 })
   }, [])
 
   useEffect(() => {
@@ -125,7 +128,7 @@ export default function Phase1Page() {
 
     if (currentRing?.id != sourceItem.correctRing) {
       setWrongAnswer(true)
-      setAudio({src: new Audio('/assets/sounds/fase1/fase1-resposta-errada.ogg'), time: 3000})
+      setAudio({ src: new Audio('/assets/sounds/fase1/fase1-resposta-errada.ogg'), time: 3000 })
 
       return
     }
@@ -142,11 +145,14 @@ export default function Phase1Page() {
     setItems((items) => items.filter((_, i) => i !== e.source.index))
 
     setCorrectAnswer(sourceItem.text)
-    setAudio({src: new Audio(`/assets/sounds/fase1/fase1-resposta-correta-${correctRing.id}.ogg`), time: correctRing.time})
+    setAudio({
+      src: new Audio(`/assets/sounds/fase1/fase1-resposta-correta-${correctRing.id}.ogg`),
+      time: correctRing.time,
+    })
   }
 
   useEffect(() => {
-    if((rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100 == 100) {
+    if ((rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100 == 100) {
       setAudio({ src: new Audio('/assets/sounds/fase1/fase1-conclusao.ogg'), time: 3500 })
     }
   }, [rings])
@@ -170,6 +176,7 @@ export default function Phase1Page() {
   }
 
   async function handleClick() {
+    setCookie('phase-1', true)
     router.push('/fases')
   }
 
@@ -262,7 +269,12 @@ export default function Phase1Page() {
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided) => (
                     <img
-                      onMouseEnter={() => setAudio({src: new Audio(`/assets/sounds/fase1/fase1-arrastar-${item.id}.ogg`), time: item.time})}
+                      onMouseEnter={() =>
+                        setAudio({
+                          src: new Audio(`/assets/sounds/fase1/fase1-arrastar-${item.id}.ogg`),
+                          time: item.time,
+                        })
+                      }
                       onMouseLeave={handleStopAudio}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
