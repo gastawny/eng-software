@@ -15,7 +15,7 @@ export default function Home() {
       audio.pause()
     }
   }, [])
-  
+
   return (
     <div className="relative h-screen w-screen flex justify-center items-center">
       <h1 className="absolute top-8 text-center text-4xl font-bold">
@@ -27,7 +27,7 @@ export default function Home() {
         <CardContent className="flex flex-col gap-4 items-center w-[28rem] 2xl:w-[40rem]">
           <Button variant="ghost" asChild className="w-full text-2xl py-6">
             <Link href="/login">
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-center">
                 <span>Iniciar</span>
                 <img className="h-5" src="/assets/svgs/play.svg" />
               </div>
@@ -35,7 +35,7 @@ export default function Home() {
           </Button>
           <Button variant="ghost" asChild className="w-full text-2xl py-6">
             <Link href="/comojogar">
-              <div className="flex gap-3">
+              <div className="flex gap-3 items-center">
                 <span>Como Jogar</span>
                 <img className="h-5" src="/assets/svgs/doubt.svg" />
               </div>
@@ -43,7 +43,7 @@ export default function Home() {
           </Button>
           <Button variant="ghost" asChild className="w-full text-2xl py-6">
             <Link href="/creditos">
-              <div className="flex gap-3">
+              <div className="flex gap-3 items-center">
                 <span>Créditos</span>
                 <img className="h-5" src="/assets/svgs/info.svg" />
               </div>
@@ -51,7 +51,7 @@ export default function Home() {
           </Button>
           <Button variant="ghost" asChild className="w-full text-2xl py-6">
             <Link href="/professor/login">
-              <div className="flex gap-3">
+              <div className="flex gap-3 items-center">
                 <span>Professor</span>
                 <img className="h-5" src="/assets/svgs/teacher.svg" />
               </div>
