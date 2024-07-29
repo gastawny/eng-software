@@ -1,11 +1,9 @@
 name: Deploy
 
-"on":
+on:
   push:
     branches:
       - master
-    paths:
-      - 'posts/**'
 
 jobs:
   post:
