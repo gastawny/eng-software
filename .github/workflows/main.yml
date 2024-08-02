@@ -7,5 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Get Branch Name
-        run: echo ${GITHUB_REF##*/}
+      - name: Set up Git for cloning
+        run: git config --global url."https://${{ secrets.API_TOKEN_GITHUB }}:@github.com/".insteadOf "https://github.com/"
+      - name: creates output
+        run:  git clone https://github.com/gastawny/eng-software.git
+      - name: Pushes to another repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'eng-software'
+          destination-github-username: 'thick3USR'
+          destination-repository-name: 'eng-software'
+          user-email: github.thick3@gmail.com
+          target-branch: ${GITHUB_REF##*/}
