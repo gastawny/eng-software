@@ -13,7 +13,7 @@ jobs:
         id: get_branch
         run: echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: creates output
-        run: git clone b ${{ env.branch }} https://github.com/gastawny/eng-software.git
+        run: git clone -b ${{ env.branch }} https://github.com/gastawny/eng-software.git
       - name: git log
         run: git log
       - name: Pushes to another repository
