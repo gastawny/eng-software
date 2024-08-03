@@ -13,7 +13,9 @@ jobs:
         id: get_branch
         run: echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: creates output
-        run: git clone https://github.com/gastawny/eng-software.git
+        run: git clone -b ${{ env.branch }} https://github.com/gastawny/eng-software.git
+      - name: git log
+        run: git log
       - name: Pushes to another repository
         uses: cpina/github-action-push-to-another-repository@main
         env:
@@ -23,6 +25,5 @@ jobs:
           destination-github-username: 'thick3USR'
           destination-repository-name: 'eng-software'
           user-email: github.thick3@gmail.com
-          create-target-branch-if-needed: true
           target-branch: ${{ env.branch }}
-          
+          create-target-branch-if-needed: true
