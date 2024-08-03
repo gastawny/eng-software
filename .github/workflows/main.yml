@@ -26,4 +26,4 @@ jobs:
           destination-repository-name: 'eng-software'
           user-email: github.thick3@gmail.com
           target-branch: ${{ env.branch }}
-          
+          create-target-branch-if-needed: true
