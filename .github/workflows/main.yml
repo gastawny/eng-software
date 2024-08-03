@@ -14,6 +14,8 @@ jobs:
         run: echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: creates output
         run: git clone https://github.com/gastawny/eng-software.git
+      - name: git branch
+        run: git branch
       - name: Pushes to another repository
         uses: cpina/github-action-push-to-another-repository@main
         env:
