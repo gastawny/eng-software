@@ -23,4 +23,5 @@ jobs:
           destination-github-username: 'thick3USR'
           destination-repository-name: 'eng-software'
           user-email: github.thick3@gmail.com
+          target-branch: ${{ env.branch }}
           
