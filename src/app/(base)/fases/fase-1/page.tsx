@@ -10,14 +10,17 @@ import { useRouter } from 'next/navigation'
 import { getCookie, setCookie } from 'cookies-next'
 import { api } from '@/config/variables'
 
-function Ring({ className, id, item }: { className: string; id: string; item: any }) {
+function Ring({ hex, id, item }: { hex: string; id: string; item: any }) {
   return (
     <Droppable droppableId={id}>
       {(provided) => (
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className={`w-36 2xl:w-40 h-36 2xl:h-40 rounded-full border-8 flex items-center justify-center ${className}`}
+          className={
+            'w-36 2xl:w-40 h-36 2xl:h-40 rounded-full border-8 flex items-center justify-center'
+          }
+          style={{ borderColor: hex }}
         >
           {item.id && (
             <Draggable draggableId={item.id} index={10}>
@@ -267,7 +270,7 @@ export default function Phase1Page() {
         <div className="flex gap-4 items-center">
           <div className="flex h-full 2xl:h-3/4 flex-wrap flex-col gap-5 2xl:gap-8 justify-center">
             {rings.map((r, i) => (
-              <Ring key={r.id} id={r.id} className={r.color} item={rings[i].item} />
+              <Ring key={r.id} id={r.id} hex={r.hex} item={rings[i].item} />
             ))}
           </div>
         </div>
