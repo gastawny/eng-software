@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCookie, setCookie } from 'cookies-next'
 import { api } from '@/config/variables'
-import { setSound } from '@/utils/setSound'
 
 function Ring({ className, id, item }: { className: string; id: string; item: any }) {
   return (
@@ -23,12 +22,15 @@ function Ring({ className, id, item }: { className: string; id: string; item: an
           {item.id && (
             <Draggable draggableId={item.id} index={10}>
               {(provided) => (
-                <img
+                <div
                   {...provided.draggableProps}
                   {...provided.dragHandleProps}
                   ref={provided.innerRef}
-                  src={item.src}
-                ></img>
+                  className="text-3xl font-bold"
+                  style={{ color: item.color }}
+                >
+                  {item.word}
+                </div>
               )}
             </Draggable>
           )}
@@ -41,72 +43,15 @@ function Ring({ className, id, item }: { className: string; id: string; item: an
 
 export default function Phase1Page() {
   const router = useRouter()
-  const [audio, setAudio] = useState<{ src: HTMLAudioElement | null; time: number }>({
-    src: null,
-    time: 0,
-  })
+  const [difficultyNumber, setDifficultyNumber] = useState(1)
+  const [totalDifficulties, setTotalDifficulties] = useState(0)
   const [wrongAnswer, setWrongAnswer] = useState(false)
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [seconds, setSeconds] = useState(0)
   const [finish, setFinish] = useState(false)
-  const [rings, setRings] = useState([
-    { id: '1', color: 'border-gray-100', item: {}, element: 'Ar', time: 11500 },
-    { id: '2', color: 'border-yellow-400', item: {}, element: 'Luz', time: 12000 },
-    { id: '3', color: 'border-yellow-800', item: {}, element: 'Terra', time: 13600 },
-    { id: '4', color: 'border-red-600', item: {}, element: 'Calor', time: 18000 },
-    { id: '5', color: 'border-blue-500', item: {}, element: 'Água', time: 10000 },
-  ])
-  const [items, setItems] = useState([
-    {
-      id: '1',
-      src: '/assets/svgs/sun.svg',
-      text: 'A luz é necessária para as plantas realizarem fotossíntese. Além de influenciar o crescimento e floração (fotoperiodismo) .',
-      correctRing: '2',
-      time: 3600,
-    },
-    {
-      id: '2',
-      src: '/assets/svgs/thermometer.svg',
-      text: 'O calor regula o crescimento da planta, com o aumento da temperatura a planta transpira mais (perde água), realiza mais fotossíntese e respiração.',
-      correctRing: '4',
-      time: 4200,
-    },
-    {
-      id: '3',
-      src: '/assets/svgs/dust.svg',
-      text: 'A terra fornece nutrientes necessários para o bom desenvolvimento da planta, conforme as necessidades de cada espécie vegetal. Além disso, o solo sustenta toda a estrutura vegetal.',
-      correctRing: '3',
-      time: 3500,
-    },
-    {
-      id: '4',
-      src: '/assets/svgs/water.svg',
-      text: 'A água é fundamental para o crescimento da planta, sendo utilizada para transportar os nutrientes por toda a estrutura através da seiva.',
-      correctRing: '5',
-      time: 3500,
-    },
-    {
-      id: '5',
-      src: '/assets/svgs/wind.svg',
-      text: 'O ar é necessário na planta para fornecer elementos que serão utilizados na fotossíntese e respiração',
-      correctRing: '1',
-      time: 3700,
-    },
-  ])
-
-  useEffect(() => {
-    setAudio({ src: new Audio('/assets/sounds/tutorial-fase1.ogg'), time: 22500 })
-  }, [])
-
-  useEffect(() => {
-    if (!audio.src) return
-
-    setSound(audio.src, audio.time)
-
-    return () => {
-      audio.src?.pause()
-    }
-  }, [audio])
+  const [rings, setRings] = useState([] as any)
+  const [items, setItems] = useState([] as any)
+  const [colors, setColors] = useState([] as any)
 
   async function onDragEnd(e: DropResult) {
     if (!e.destination) return
@@ -125,11 +70,10 @@ export default function Phase1Page() {
 
     if (currentRing?.item?.id || !correctRing) return
 
-    await sendResult(currentRing!.element, correctRing.element)
+    await sendResult(sourceItem, currentRing.hex)
 
     if (currentRing?.id != sourceItem.correctRing) {
       setWrongAnswer(true)
-      setAudio({ src: new Audio('/assets/sounds/fase1/fase1-resposta-errada.ogg'), time: 3000 })
 
       return
     }
@@ -146,24 +90,27 @@ export default function Phase1Page() {
     setItems((items) => items.filter((_, i) => i !== e.source.index))
 
     setCorrectAnswer(sourceItem.text)
-    setAudio({
-      src: new Audio(`/assets/sounds/fase1/fase1-resposta-correta-${correctRing.id}.ogg`),
-      time: correctRing.time,
-    })
   }
 
   function handlePhase() {
     if ((rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100 == 100) {
-      setFinish(true)
-      setAudio({ src: new Audio('/assets/sounds/fase1/fase1-conclusao.ogg'), time: 3500 })
+      if (totalDifficulties > difficultyNumber) {
+        setDifficultyNumber(difficultyNumber + 1)
+      } else {
+        setFinish(true)
+      }
     }
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [difficultyNumber])
 
   function getTotalSeconds(totalSeconds: number) {
     setSeconds(totalSeconds)
   }
 
-  async function sendResult(answer: string, correctAnswer: string) {
+  async function sendResult(item, color) {
     const student = getCookie('student')
 
     if (!student) return
@@ -173,7 +120,11 @@ export default function Phase1Page() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ answer, correctAnswer, seconds }),
+      body: JSON.stringify({
+        phaseOneId: item.phaseOneId,
+        idColor: colors.find((c) => c.hex === color).id,
+        seconds,
+      }),
     })
   }
 
@@ -182,9 +133,36 @@ export default function Phase1Page() {
     router.push('/fases')
   }
 
-  function handleStopAudio() {
-    audio.src?.pause()
+  async function fetchData() {
+    const res = await fetch(
+      `${api}/phases/render?phaseNumber=1&idTheme=${getCookie('theme')}&difficultyNumber=${difficultyNumber}`
+    )
+    const data = await res.json()
+
+    setRings(
+      data.colors.map((c, i) => ({ id: `${i + 1}`, color: `border-[${[c]}]`, item: {}, hex: c }))
+    )
+
+    setTotalDifficulties(data.totalDifficulties)
+
+    setItems(
+      data.phaseOneWordsDTOS.map((obj, i) => ({
+        id: `${i + 1}`,
+        text: obj.description,
+        correctRing: `${i + 1}`,
+        color: obj.color,
+        word: obj.word,
+        phaseOneId: obj.phaseOneId,
+      }))
+    )
   }
+
+  useEffect(() => {
+    fetchData()
+    ;(async () => {
+      setColors(await fetch(`${api}/phases/colors`).then((res) => res.json()))
+    })()
+  }, [])
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -218,7 +196,6 @@ export default function Phase1Page() {
               <DialogClose
                 onClick={() => {
                   setCorrectAnswer('')
-                  handleStopAudio()
                   handlePhase()
                 }}
                 className={buttonVariants({
@@ -236,7 +213,7 @@ export default function Phase1Page() {
         <DialogContent className="gap-6 p-8 w-[60rem] ">
           <div className="flex justify-center items-center flex-col gap-6 text-4xl text-center">
             <p className="">Parabéns!</p>
-            <p>Você concluiu a Fase I: Crescendo</p>
+            <p>Você concluiu a Fase I</p>
             <p>Volte para a tela de seleção de fases para continuar.</p>
           </div>
           <DialogFooter>
@@ -255,34 +232,32 @@ export default function Phase1Page() {
       <Timer getTotalSeconds={getTotalSeconds} />
       <div className="max-h-screen w-screen flex gap-52 2xl:gap-80">
         <h1 className="text-3xl font-bold absolute left-1/2 top-4 2xl:top-8 -translate-x-1/2">
-          Fase I: Crescendo
+          Fase I
         </h1>
         <Droppable droppableId={'0'}>
           {(provided) => (
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className={'bg-green-800 w-96 flex justify-center gap-4 items-center flex-wrap'}
+              className={
+                'bg-green-800 w-96 flex justify-center gap-8 items-center flex-wrap h-screen'
+              }
             >
               {items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided) => (
-                    <img
-                      onMouseEnter={() =>
-                        setAudio({
-                          src: new Audio(`/assets/sounds/fase1/fase1-arrastar-${item.id}.ogg`),
-                          time: item.time,
-                        })
-                      }
-                      onMouseLeave={handleStopAudio}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      ref={provided.innerRef}
-                      src={item.src}
-                      className="h-40"
-                    ></img>
-                  )}
-                </Draggable>
+                <div key={item.id} style={{ color: item.color, zIndex: '0' }}>
+                  <Draggable draggableId={item.id} index={index}>
+                    {(provided) => (
+                      <div
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        ref={provided.innerRef}
+                        className="text-3xl font-bold"
+                      >
+                        {item.word}
+                      </div>
+                    )}
+                  </Draggable>
+                </div>
               ))}
               {provided.placeholder}
             </div>
@@ -296,18 +271,17 @@ export default function Phase1Page() {
             ))}
           </div>
         </div>
-        <img
-          src={`/assets/svgs/${(rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100}.svg`}
-          className="h-64 2xl:h-80 absolute top-1/2 -translate-y-1/2 right-4 2xl:right-8"
-        />
         <div className="absolute left-1/2 bottom-1 2xl:bottom-4 -translate-x-1/2 w-1/3 2xl:w-1/2 text-center">
           <Progress
             className="h-3 2xl:h-4"
             value={(rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100}
           />
           <p className="text-xl 2xl:mt-2">
-            {(rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) * 100}%
-            completo
+            {(
+              (rings.reduce((acc, r) => (r.item.id ? acc + 1 : acc), 0) / rings.length) *
+              100
+            ).toFixed(0)}
+            % completo
           </p>
         </div>
       </div>

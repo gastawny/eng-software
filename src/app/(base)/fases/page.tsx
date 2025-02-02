@@ -2,8 +2,17 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { setSound } from '@/utils/setSound'
-import { getCookie } from 'cookies-next'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { api } from '@/config/variables'
+import { getCookie, setCookie } from 'cookies-next'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -11,32 +20,44 @@ export default function PhasesPage() {
   const router = useRouter()
   const [phase1, setPhase1] = useState(undefined as any)
   const [phase2, setPhase2] = useState(undefined as any)
+  const [themes, setThemes] = useState([] as any)
+  const [selectedTheme, setSelectedTheme] = useState(undefined as any)
 
   useEffect(() => {
-    const audio = new Audio('/assets/sounds/selecao-de-fases.ogg')
-    setSound(audio, 11500)
-
     setPhase1(getCookie('phase-1'))
     setPhase2(getCookie('phase-2'))
 
-    return () => {
-      audio.pause()
+    async function fetchData() {
+      setThemes(await fetch(`${api}/theme/${getCookie('student')}`).then((res) => res.json()))
     }
+
+    fetchData()
   }, [])
 
+  function redirectToPhase(phase: number) {
+    if (!selectedTheme) {
+      alert('Selecione um tema')
+      return
+    }
+
+    setCookie('theme', selectedTheme)
+
+    router.push(`fases/fase-${phase}`)
+  }
+
   return (
-    <>
+    <div className="h-screen">
       <h1 className="text-5xl font-bold absolute left-1/2 top-16 -translate-x-1/2">
         Seleção de fases
       </h1>
       <Card className="w-[48rem] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <CardContent className="flex flex-col items-center gap-8">
           <Button
-            onClick={() => router.push('fases/fase-1')}
+            onClick={() => redirectToPhase(1)}
             variant="ghost"
             className="text-3xl py-4 h-min w-full"
           >
-            Fase I: Crescendo
+            Fase I
             {phase1 ? (
               <img className="ml-4 h-8" src="/assets/svgs/trophy.svg" />
             ) : (
@@ -45,11 +66,11 @@ export default function PhasesPage() {
           </Button>
           <Button
             disabled={!phase1}
-            onClick={() => router.push('fases/fase-2')}
+            onClick={() => redirectToPhase(2)}
             variant="ghost"
             className="text-3xl py-4 h-min w-full"
           >
-            Fase II: Sobre mim
+            Fase II
             {phase2 ? (
               <img className="ml-4 h-8" src="/assets/svgs/trophy.svg" />
             ) : (
@@ -58,6 +79,24 @@ export default function PhasesPage() {
           </Button>
         </CardContent>
       </Card>
-    </>
+      <div className="absolute left-1/2 bottom-16 -translate-x-1/2 flex justify-center items-center gap-2">
+        <p className="text-lg">Tema:</p>
+        <Select onValueChange={setSelectedTheme} required name="student">
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Selecione o tema" />
+          </SelectTrigger>
+          <SelectContent className="h-72">
+            <SelectGroup>
+              <SelectLabel>Temas</SelectLabel>
+              {themes.map((theme) => (
+                <SelectItem key={theme.id} value={theme.id.toString()}>
+                  {theme.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
   )
 }

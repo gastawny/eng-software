@@ -5,8 +5,8 @@ import './globals.css'
 const alef = Alef({ subsets: ['latin'], weight: ['400', '700'] })
 
 export const metadata: Metadata = {
-  title: 'Plantas em Ação',
-  description: 'Plantas em Ação: Descobrindo e Crescendo',
+  title: 'SuperQuiz',
+  description: 'SuperQuiz',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
