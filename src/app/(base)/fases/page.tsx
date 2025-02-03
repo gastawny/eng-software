@@ -80,9 +80,9 @@ export default function PhasesPage() {
         </CardContent>
       </Card>
       <div className="absolute left-1/2 bottom-16 -translate-x-1/2 flex justify-center items-center gap-2">
-        <p className="text-lg">Tema:</p>
+        <p className="text-3xl">Tema:</p>
         <Select onValueChange={setSelectedTheme} required name="student">
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full text-3xl h-12">
             <SelectValue placeholder="Selecione o tema" />
           </SelectTrigger>
           <SelectContent className="h-72">
