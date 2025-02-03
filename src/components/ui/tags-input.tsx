@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable */
 
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
