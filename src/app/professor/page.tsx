@@ -180,7 +180,7 @@ export default function TeacherPage() {
 
     setMessage({ err: false, message: 'Sucesso' })
 
-    // setTimeout(() => window.location.reload(), 1000)
+    setTimeout(() => window.location.reload(), 1000)
   }
 
   async function handleSubmitTheme(e: React.FormEvent<HTMLFormElement>) {
