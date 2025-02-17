@@ -281,11 +281,9 @@ export default function TeacherPage() {
 
     setColors(newColors)
     // encontrar a cor customizada e setar o id dela
-    console.log(`${newColors.find((c) => c.hex === customColor).id}`, 'asd')
     setSelectedColor(`${newColors.find((c) => c.hex === customColor).id}`)
   }
 
-  useEffect(() => console.log(selectedColor), [selectedColor])
   /* eslint-disable */
   return (
     <>
@@ -381,7 +379,7 @@ export default function TeacherPage() {
                 <div className="flex gap-2 items-baseline">
                   <div className='className="flex flex-col gap-2 flex-1'>
                     <Label htmlFor="color">Cor</Label>
-                    <Select required name="color" value={selectedColor}>
+                    <Select required name="color" value={selectedColor} onValueChange={e => setSelectedColor(e)}>
                       <SelectTrigger className="w-full ">
                         <SelectValue placeholder="Selecione a cor" />
                       </SelectTrigger>
